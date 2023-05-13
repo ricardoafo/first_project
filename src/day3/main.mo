@@ -1,20 +1,26 @@
-actor {
-  public type Result<T, E> = Result.Result<T, E>;
-  public type Content = {
-    #Text : Text;
-    #Image : Blob;
-    #Video : Blob;
-  };
-  public type Message = {
-    vote : Int;
-    content : Content;
-    creator : Principal;
-  };
+import Buffer "mo:base/Buffer";
+import Debug "mo:base/Debug";
+import Hash "mo:base/Hash";
+import HashMap "mo:base/HashMap";
+import Nat "mo:base/Nat";
+import Principal "mo:base/Principal";
+import Iter "mo:base/Iter";
+import Array "mo:base/Array";
+import Type "Types";
+
+
+
+actor StudentWall {
+  type Content = Type.Content;
+  type Message = Type.Message;
+  type Result<T, E> = Type.Result<T, E>;
+  type Order = Type.Order;
+
+  
   var messageId : Nat = 0;
   var wall = HashMap.HashMap<Nat, Message>(1, Nat.equal, Hash.hash);
 
   public shared ({ caller }) func writeMessage(c : Content) : async Nat {
-    Debug.print(debug_show (messageId));
     var id : Nat = messageId;
 
     let message : Message = {
@@ -28,7 +34,7 @@ actor {
     return id;
   };
 
-  public shared query func getMessage(messageId : Nat) : async Result<?Message, Text> {
+  public shared query func getMessage(messageId : Nat) : async Result<Message, Text> {
     let message : ?Message = wall.get(messageId);
 
     switch (message) {
@@ -36,7 +42,7 @@ actor {
         return #err("The message dosen't exits");
       };
       case (?message) {
-        return #ok(?message);
+        return #ok(message);
       };
     };
   };
@@ -65,7 +71,7 @@ actor {
     };
   };
 
-  public shared func deleteMessage(meessageId : Nat) : async Result<(), Text> {
+  public shared func deleteMessage(messageId : Nat) : async Result<(), Text> {
     let message : ?Message = wall.get(messageId);
 
     switch (message) {
@@ -78,7 +84,24 @@ actor {
       };
     };
   };
-};
+
+  public shared func upVote(messageId : Nat) : async Result<(), Text> {
+    let message : ?Message = wall.get(messageId);
+
+    switch (message) {
+      case (null) {
+        return #err("The message dosen't exits");
+      };
+      case (?message) {
+        let updatedMessage : Message = {
+          vote = (message.vote + 1);
+          content = message.content;
+          creator = message.creator;
+        };
+
+        wall.put(messageId, updatedMessage);
+        return #ok();
+      };
     };
   };
 
@@ -100,5 +123,31 @@ actor {
         return #ok();
       };
     };
+  };
+
+  public shared query func getAllMessages() : async [Message] {
+    var wallBuffer = Buffer.Buffer<Message>(0);
+    for (message in wall.vals()) {
+      wallBuffer.add(message);
+    };
+    
+    Debug.print(debug_show (Buffer.toArray(wallBuffer).size()));
+    return Buffer.toArray(wallBuffer);
+  };
+
+  private func _getAllMessagesRanked(a : Message, b : Message) : Order {
+    if(a.vote > b.vote) {
+      return #less;
+    } else if (a.vote < b.vote) {
+      return #greater;
+    } else {
+      return #equal
+    };
+  };
+  
+  public shared query func getAllMessagesRanked() : async [Message] {
+  let iterWall : Iter.Iter<Message> = wall.vals();
+  let sortedIterWall : Iter.Iter<Message> = Iter.sort(iterWall, _getAllMessagesRanked);
+  return Iter.toArray<Message>(sortedIterWall);
   };
 };

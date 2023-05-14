@@ -127,7 +127,7 @@ actor Verifier {
       return false;
     } catch (e) {
       return false;
-    }
+    };
   };
 
   public shared ({ caller }) func verifyWork(canisterId : Principal, p : Principal) : async Result<(), Text> {

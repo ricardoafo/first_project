@@ -1,7 +1,7 @@
 {
     "canisters": {
         "first_canister" : {
-            "main": "src/day2/main.mo",
+            "main": "src/day5/main.mo",
             "type": "motoko"
         }
     }

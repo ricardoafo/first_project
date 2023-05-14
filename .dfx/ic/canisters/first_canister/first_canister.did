@@ -1,30 +1,35 @@
-type Time = int;
+type TestResult = 
+ variant {
+   err: TestError;
+   ok;
+ };
+type TestError = 
+ variant {
+   UnexpectedError: text;
+   UnexpectedValue: text;
+ };
+type StudentProfile = 
+ record {
+   graduate: bool;
+   name: text;
+   team: text;
+ };
 type Result_1 = 
  variant {
    err: text;
-   ok: Homework__1;
+   ok: StudentProfile;
  };
 type Result = 
  variant {
    err: text;
    ok;
  };
-type Homework__1 = 
- record {
-   completed: bool;
-   description: text;
-   dueDate: Time;
-   title: text;
- };
-type Homework = 
- service {
-   addHomework: (Homework__1) -> (nat);
-   deleteHomework: (nat) -> (Result);
-   getAllHomework: () -> (vec Homework__1) query;
-   getHomework: (nat) -> (Result_1) query;
-   getPendingHomework: () -> (vec Homework__1) query;
-   markAsCompleted: (nat) -> (Result);
-   searchHomework: (text) -> (vec Homework__1) query;
-   updateHomework: (nat, Homework__1) -> (Result);
- };
-service : () -> Homework
+service : {
+  addMyProfile: (StudentProfile) -> (Result);
+  deleteMyProfile: (principal) -> (Result);
+  seeAProfile: (principal) -> (Result_1) query;
+  test: (principal) -> (TestResult);
+  updateMyProfile: (principal, StudentProfile) -> (Result_1);
+  verifyOwnership: (principal, principal) -> (bool);
+  verifyWork: (principal, principal) -> (Result);
+}

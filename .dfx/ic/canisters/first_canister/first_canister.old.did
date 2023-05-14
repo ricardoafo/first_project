@@ -1,11 +1,35 @@
+type TestResult = 
+ variant {
+   err: TestError;
+   ok;
+ };
+type TestError = 
+ variant {
+   UnexpectedError: text;
+   UnexpectedValue: text;
+ };
+type StudentProfile = 
+ record {
+   graduate: bool;
+   name: text;
+   team: text;
+ };
+type Result_1 = 
+ variant {
+   err: text;
+   ok: StudentProfile;
+ };
+type Result = 
+ variant {
+   err: text;
+   ok;
+ };
 service : {
-  add: (float64) -> (float64);
-  div: (float64) -> (float64);
-  floor: () -> (int);
-  mul: (float64) -> (float64);
-  power: (float64) -> (float64);
-  reset: () -> (float64);
-  see: () -> (float64) query;
-  sqrt: () -> (float64);
-  sub: (float64) -> (float64);
+  addMyProfile: (StudentProfile) -> (Result);
+  deleteMyProfile: (principal) -> (Result);
+  seeAProfile: (principal) -> (Result_1) query;
+  test: (principal) -> (TestResult);
+  updateMyProfile: (principal, StudentProfile) -> (Result_1);
+  verifyOwnership: (principal, principal) -> (bool);
+  verifyWork: (principal, principal) -> (Result);
 }

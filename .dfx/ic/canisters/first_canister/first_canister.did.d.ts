@@ -1,25 +1,25 @@
 import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 
-export interface Homework {
-  'addHomework' : ActorMethod<[Homework__1], bigint>,
-  'deleteHomework' : ActorMethod<[bigint], Result>,
-  'getAllHomework' : ActorMethod<[], Array<Homework__1>>,
-  'getHomework' : ActorMethod<[bigint], Result_1>,
-  'getPendingHomework' : ActorMethod<[], Array<Homework__1>>,
-  'markAsCompleted' : ActorMethod<[bigint], Result>,
-  'searchHomework' : ActorMethod<[string], Array<Homework__1>>,
-  'updateHomework' : ActorMethod<[bigint, Homework__1], Result>,
-}
-export interface Homework__1 {
-  'title' : string,
-  'completed' : boolean,
-  'dueDate' : Time,
-  'description' : string,
-}
 export type Result = { 'ok' : null } |
   { 'err' : string };
-export type Result_1 = { 'ok' : Homework__1 } |
+export type Result_1 = { 'ok' : StudentProfile } |
   { 'err' : string };
-export type Time = bigint;
-export interface _SERVICE extends Homework {}
+export interface StudentProfile {
+  'graduate' : boolean,
+  'name' : string,
+  'team' : string,
+}
+export type TestError = { 'UnexpectedValue' : string } |
+  { 'UnexpectedError' : string };
+export type TestResult = { 'ok' : null } |
+  { 'err' : TestError };
+export interface _SERVICE {
+  'addMyProfile' : ActorMethod<[StudentProfile], Result>,
+  'deleteMyProfile' : ActorMethod<[Principal], Result>,
+  'seeAProfile' : ActorMethod<[Principal], Result_1>,
+  'test' : ActorMethod<[Principal], TestResult>,
+  'updateMyProfile' : ActorMethod<[Principal, StudentProfile], Result_1>,
+  'verifyOwnership' : ActorMethod<[Principal, Principal], boolean>,
+  'verifyWork' : ActorMethod<[Principal, Principal], Result>,
+}

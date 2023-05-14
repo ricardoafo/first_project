@@ -1,32 +1,21 @@
-type Result_1 = 
- variant {
-   err: text;
-   ok: opt Message;
+type StudentProfile = 
+ record {
+   graduate: bool;
+   name: text;
+   team: text;
  };
-type Result = 
+type Result_1 = 
  variant {
    err: text;
    ok;
  };
-type Message = 
- record {
-   content: Content;
-   creator: principal;
-   vote: int;
- };
-type Content = 
+type Result = 
  variant {
-   Image: blob;
-   Text: text;
-   Video: blob;
+   err: text;
+   ok: StudentProfile;
  };
 service : {
-  deleteMessage: (nat) -> (Result);
-  downVote: (nat) -> (Result);
-  getAllMessages: () -> (vec Message) query;
-  getAllMessagesRanked: () -> (vec Message) query;
-  getMessage: (nat) -> (Result_1) query;
-  upVote: (nat) -> (Result);
-  updateMessage: (nat, Content) -> (Result);
-  writeMessage: (Content) -> (nat);
+  addMyProfile: (StudentProfile) -> (Result_1);
+  seeAProfile: (principal) -> (Result) query;
+  updateMyProfile: (principal, StudentProfile) -> (Result);
 }

@@ -1,23 +1,32 @@
 export const idlFactory = ({ IDL }) => {
-  const Time = IDL.Int;
-  const Homework__1 = IDL.Record({
-    'title' : IDL.Text,
-    'completed' : IDL.Bool,
-    'dueDate' : Time,
-    'description' : IDL.Text,
+  const StudentProfile = IDL.Record({
+    'graduate' : IDL.Bool,
+    'name' : IDL.Text,
+    'team' : IDL.Text,
   });
   const Result = IDL.Variant({ 'ok' : IDL.Null, 'err' : IDL.Text });
-  const Result_1 = IDL.Variant({ 'ok' : Homework__1, 'err' : IDL.Text });
-  const Homework = IDL.Service({
-    'addHomework' : IDL.Func([Homework__1], [IDL.Nat], []),
-    'deleteHomework' : IDL.Func([IDL.Nat], [Result], []),
-    'getAllHomework' : IDL.Func([], [IDL.Vec(Homework__1)], ['query']),
-    'getHomework' : IDL.Func([IDL.Nat], [Result_1], ['query']),
-    'getPendingHomework' : IDL.Func([], [IDL.Vec(Homework__1)], ['query']),
-    'markAsCompleted' : IDL.Func([IDL.Nat], [Result], []),
-    'searchHomework' : IDL.Func([IDL.Text], [IDL.Vec(Homework__1)], ['query']),
-    'updateHomework' : IDL.Func([IDL.Nat, Homework__1], [Result], []),
+  const Result_1 = IDL.Variant({ 'ok' : StudentProfile, 'err' : IDL.Text });
+  const TestError = IDL.Variant({
+    'UnexpectedValue' : IDL.Text,
+    'UnexpectedError' : IDL.Text,
   });
-  return Homework;
+  const TestResult = IDL.Variant({ 'ok' : IDL.Null, 'err' : TestError });
+  return IDL.Service({
+    'addMyProfile' : IDL.Func([StudentProfile], [Result], []),
+    'deleteMyProfile' : IDL.Func([IDL.Principal], [Result], []),
+    'seeAProfile' : IDL.Func([IDL.Principal], [Result_1], ['query']),
+    'test' : IDL.Func([IDL.Principal], [TestResult], []),
+    'updateMyProfile' : IDL.Func(
+        [IDL.Principal, StudentProfile],
+        [Result_1],
+        [],
+      ),
+    'verifyOwnership' : IDL.Func(
+        [IDL.Principal, IDL.Principal],
+        [IDL.Bool],
+        [],
+      ),
+    'verifyWork' : IDL.Func([IDL.Principal, IDL.Principal], [Result], []),
+  });
 };
 export const init = ({ IDL }) => { return []; };
